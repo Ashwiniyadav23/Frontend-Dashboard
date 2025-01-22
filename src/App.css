@@ -1,0 +1,33 @@
+.App {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+  }
+  
+  .filters {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .filters-container select {
+    padding: 5px;
+    margin-right: 10px;
+  }
+  
+  .date-range-container input {
+    padding: 5px;
+    margin-right: 10px;
+  }
+  
+  .header {
+    text-align: center;
+  }
+  
+  h1 {
+    color: #333;
+  }
+  
+  h3 {
+    color: #555;
+  }
+  
