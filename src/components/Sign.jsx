@@ -1,123 +1,91 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Sign.css";
 
-function Sign() {
+function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    setName("");
-    setEmail("");
-    setPassword("");
-    setConfirmPassword("");
-  }, []);
-
-  const handleLoginClick = () => {
-    navigate("/login");
-  };
-
-  const handleSubmit = (e) => {
+  const handleSignupClick = async (e) => {
     e.preventDefault();
 
-    if (password !== confirmPassword) {
-      alert("Passwords do not match");
-      return;
-    }
+    try {
+      const response = await fetch("http://localhost:5000/api/sign", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+        }),
+      });
 
-    if (name && email && password && confirmPassword) {
-      const userData = { name, email, password };
-      alert("Sign-Up Successful");
-      let users = JSON.parse(localStorage.getItem("users")) || [];
-      users.push(userData);
-      localStorage.setItem("users", JSON.stringify(users));
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Sign-Up failed!");
+      }
+
+      const data = await response.json();
+      alert('<===== Do Login =====>');
       navigate("/login");
-    } else {
-      alert("Please fill in all fields");
+    } catch (error) {
+      alert(error.message || "Sign-Up failed!");
     }
-  };
-
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
   };
 
   return (
-    <div className="main-container">
+    <div className="Main-Container">
       <h1>Sign-Up</h1>
-      <form onSubmit={handleSubmit}>
-        {/* Name Input */}
+      <form onSubmit={handleSignupClick}>
         <div className="input-container">
-          <i className="fa fa-user input-icon"></i>
+          <i className="fa-solid fa-user"></i>
           <input
-            id="name"
             type="text"
-            placeholder="Enter your Name..."
+            placeholder="Enter your Name....."
             value={name}
             onChange={(e) => setName(e.target.value)}
             autoComplete="off"
+            required
           />
         </div>
         <hr />
-
-        {/* Email Input */}
         <div className="input-container">
-          <i className="fa fa-envelope input-icon"></i>
+          <i className="fa-solid fa-envelope email-icon"></i>
           <input
-            id="email"
             type="email"
-            placeholder="Enter your Email..."
+            placeholder="Enter your Email....."
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             autoComplete="off"
+            required
           />
         </div>
         <hr />
-
-        {/* Password Input */}
         <div className="input-container">
-          <i className="fa fa-lock input-icon"></i>
+          <i className="fa-solid fa-lock"></i>
           <input
-            id="password"
-            type={showPassword ? "text" : "password"}
-            placeholder="Enter your Password..."
+            type="password"
+            placeholder="Enter your Password....."
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="new-password"
+            required
           />
-          <span className="toggle-password" onClick={togglePasswordVisibility}>
-            {showPassword ? "Hide" : "Show"}
-          </span>
         </div>
         <hr />
-
-        {/* Confirm Password Input */}
-        <div className="input-container">
-          <i className="fa fa-lock input-icon"></i>
-          <input
-            id="confirmPassword"
-            type={showPassword ? "text" : "password"}
-            placeholder="Confirm Password..."
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            autoComplete="new-password"
-          />
-          <span className="toggle-password" onClick={togglePasswordVisibility}>
-            {showPassword ? "Hide" : "Show"}
-          </span>
-        </div>
         <button className="btn" type="submit">
           Sign-Up
         </button>
       </form>
-      <p className="go-to-login" onClick={handleLoginClick}>
-        <i className="fa fa-sign-in-alt"></i> Already have an account? Go to Login
+      <p className="btn2" onClick={() => navigate("/login")}>
+        Go to Login
       </p>
     </div>
   );
 }
 
-export default Sign;
+export default Signup;

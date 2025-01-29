@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
@@ -16,7 +14,7 @@ import {
   LineChart,
   Line,
 } from "recharts";
-import './Dashboard.css';
+import "./Dashboard.css";
 
 const Dashboard = () => {
   const [data, setData] = useState([]);
@@ -27,7 +25,8 @@ const Dashboard = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
-    const url = "https://api.sheetbest.com/sheets/66931299-448d-4d0c-b535-7eeac70e1c3d";
+    const url =
+      "https://api.sheetbest.com/sheets/66931299-448d-4d0c-b535-7eeac70e1c3d";
 
     axios
       .get(url)
@@ -59,12 +58,36 @@ const Dashboard = () => {
 
             const topValues = {
               day,
-              A: values.map((v) => v.A).sort((a, b) => b - a).slice(0, 4).reduce((a, b) => a + b, 0),
-              B: values.map((v) => v.B).sort((a, b) => b - a).slice(0, 4).reduce((a, b) => a + b, 0),
-              C: values.map((v) => v.C).sort((a, b) => b - a).slice(0, 4).reduce((a, b) => a + b, 0),
-              D: values.map((v) => v.D).sort((a, b) => b - a).slice(0, 4).reduce((a, b) => a + b, 0),
-              E: values.map((v) => v.E).sort((a, b) => b - a).slice(0, 4).reduce((a, b) => a + b, 0),
-              F: values.map((v) => v.F).sort((a, b) => b - a).slice(0, 4).reduce((a, b) => a + b, 0),
+              A: values
+                .map((v) => v.A)
+                .sort((a, b) => b - a)
+                .slice(0, 4)
+                .reduce((a, b) => a + b, 0),
+              B: values
+                .map((v) => v.B)
+                .sort((a, b) => b - a)
+                .slice(0, 4)
+                .reduce((a, b) => a + b, 0),
+              C: values
+                .map((v) => v.C)
+                .sort((a, b) => b - a)
+                .slice(0, 4)
+                .reduce((a, b) => a + b, 0),
+              D: values
+                .map((v) => v.D)
+                .sort((a, b) => b - a)
+                .slice(0, 4)
+                .reduce((a, b) => a + b, 0),
+              E: values
+                .map((v) => v.E)
+                .sort((a, b) => b - a)
+                .slice(0, 4)
+                .reduce((a, b) => a + b, 0),
+              F: values
+                .map((v) => v.F)
+                .sort((a, b) => b - a)
+                .slice(0, 4)
+                .reduce((a, b) => a + b, 0),
             };
             return topValues;
           });
@@ -103,15 +126,15 @@ const Dashboard = () => {
   return (
     <div className={`dashboard ${isDarkMode ? "dark-mode" : "light-mode"}`}>
       <header className="dashboard-header">
-            <h1
-         style={{
-          justifyContent: "center",
-           textAlign: "center",
-          color: isDarkMode ? "#ffffff" : "#000000", 
-         }}
-       >
-         Interactive Data Visualization Dashboard
-      </h1>
+        <h1
+          style={{
+            justifyContent: "center",
+            textAlign: "center",
+            color: isDarkMode ? "#ffffff" : "#000000",
+          }}
+        >
+          Interactive Data Visualization Dashboard
+        </h1>
         <button onClick={toggleTheme}>
           {isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
         </button>
@@ -131,12 +154,36 @@ const Dashboard = () => {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="A" fill="#8884d8" onClick={() => handleBarClick("A")} />
-              <Bar dataKey="B" fill="#82ca9d" onClick={() => handleBarClick("B")} />
-              <Bar dataKey="C" fill="#ffc658" onClick={() => handleBarClick("C")} />
-              <Bar dataKey="D" fill="#ff7300" onClick={() => handleBarClick("D")} />
-              <Bar dataKey="E" fill="#ff0000" onClick={() => handleBarClick("E")} />
-              <Bar dataKey="F" fill="#FFBB28" onClick={() => handleBarClick("F")} />
+              <Bar
+                dataKey="A"
+                fill="#8884d8"
+                onClick={() => handleBarClick("A")}
+              />
+              <Bar
+                dataKey="B"
+                fill="#82ca9d"
+                onClick={() => handleBarClick("B")}
+              />
+              <Bar
+                dataKey="C"
+                fill="#ffc658"
+                onClick={() => handleBarClick("C")}
+              />
+              <Bar
+                dataKey="D"
+                fill="#ff7300"
+                onClick={() => handleBarClick("D")}
+              />
+              <Bar
+                dataKey="E"
+                fill="#ff0000"
+                onClick={() => handleBarClick("E")}
+              />
+              <Bar
+                dataKey="F"
+                fill="#FFBB28"
+                onClick={() => handleBarClick("F")}
+              />
             </BarChart>
           </ResponsiveContainer>
         )}
@@ -169,6 +216,17 @@ const Dashboard = () => {
           Selected Date: <strong>{date.toDateString()}</strong>
         </div>
       </div>
+      <label for="age-group">Age Group:</label>
+      <select id="age-group">
+        <option value="15-25">15-25</option>
+        <option value=">25">Over 25</option>
+      </select>
+
+      <label for="gender">Gender:</label>
+      <select id="gender" style={{ height: "70 px" }}>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+      </select>
     </div>
   );
 };

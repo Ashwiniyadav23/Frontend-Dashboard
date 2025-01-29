@@ -8,24 +8,30 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  const handleLoginClick = (e) => {
+  const handleLoginClick = async (e) => {
     e.preventDefault();
 
-    const storedUsers = JSON.parse(localStorage.getItem("users")) || [];
+    try {
+      const response = await fetch("http://localhost:5000/api/getAll");
+      const users = await response.json();
 
-    const userExists = storedUsers.find(
-      (user) => user.email === email && user.password === password
-    );
+      const userExists = users.find(
+        (user) => user.email === email && user.password === password
+      );
 
-    if (!userExists) {
-      alert("First Sign-Up!");
-      return;
+      if (!userExists) {
+        alert("Invalid credentials. Please Sign-Up first!");
+        return;
+      }
+
+      alert("Welcome back! You are logged in.");
+      setEmail("");
+      setPassword("");
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      alert("An error occurred. Please try again later.");
     }
-
-    alert("Welcome! You did it!");
-    setEmail("");
-    setPassword("");
-    navigate("/dashboard");
   };
 
   const togglePasswordVisibility = () => {
