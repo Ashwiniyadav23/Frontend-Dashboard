@@ -10,32 +10,35 @@ function Signup() {
 
   const handleSignupClick = async (e) => {
     e.preventDefault();
-
+  
+    console.log("🔵 Sending Data:", { name, email, password });
+  
     try {
-      const response = await fetch("http://localhost:5000/api/sign", {
+      const response = await fetch("http://localhost:5000/api/sign",{
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-        }),
+        body: JSON.stringify({ name, email, password }),
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Sign-Up failed!");
-      }
-
+  
+      console.log("🟢 Response Status:", response.status);
+  
       const data = await response.json();
-      alert('<===== Do Login =====>');
+      console.log("🟢 Response from Backend:", data);
+  
+      if (!response.ok) {
+        throw new Error(data.message || "Sign-Up failed!");
+      }
+  
+      alert("✅ Sign-Up Successful! Please login.");
       navigate("/login");
     } catch (error) {
+      console.error("🔴 Error:", error);
       alert(error.message || "Sign-Up failed!");
     }
   };
+  
 
   return (
     <div className="Main-Container">
