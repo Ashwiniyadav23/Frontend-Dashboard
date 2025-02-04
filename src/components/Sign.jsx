@@ -14,7 +14,7 @@ function Signup() {
     console.log("🔵 Sending Data:", { name, email, password });
   
     try {
-      const response = await fetch("http://localhost:5000/api/sign",{
+      const response = await fetch("https://fullstack-topaz.vercel.app/api/sign",{
         method: "POST",
         headers: {
           "Content-Type": "application/json",
