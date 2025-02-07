@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-
+import data from "./Data";
 import {
   BarChart,
   Bar,
@@ -13,111 +13,56 @@ import {
   ResponsiveContainer,
   LineChart,
   Line,
+  Brush
 } from "recharts";
 import "./Dashboard.css";
+import { FaMoon, FaSun } from "react-icons/fa"; // Importing icons
 
 const Dashboard = () => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [chartData, setChartData] = useState([]);
   const [selectedLetter, setSelectedLetter] = useState(null);
   const [date, setDate] = useState(new Date());
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [ageGroup, setAgeGroup] = useState("15-25");
+  const [gender, setGender] = useState("male");
+  const [dateRange, setDateRange] = useState([new Date("2022-04-10"), new Date("2022-10-06")]);
+  const [selectedDate, setSelectedDate] = useState(""); // New state for the date input
 
   useEffect(() => {
-    const url =
-      "https://api.sheetbest.com/sheets/66931299-448d-4d0c-b535-7eeac70e1c3d";
-  
-    fetch(url)
-      .then((response) => response.json())
-      .then((sheetData) => {
-        if (sheetData && sheetData.length > 0) {
-          const aggregatedData = {};
-  
-          sheetData.forEach((row) => {
-            const day = row.Day;
-            const values = {
-              A: parseInt(row.A, 10) || 0,
-              B: parseInt(row.B, 10) || 0,
-              C: parseInt(row.C, 10) || 0,
-              D: parseInt(row.D, 10) || 0,
-              E: parseInt(row.E, 10) || 0,
-              F: parseInt(row.F, 10) || 0,
-            };
-  
-            if (!aggregatedData[day]) {
-              aggregatedData[day] = [];
-            }
-            aggregatedData[day].push(values);
-          });
-  
-          const formattedData = Object.keys(aggregatedData).map((day) => {
-            const values = aggregatedData[day];
-  
-            const topValues = {
-              day,
-              A: values
-                .map((v) => v.A)
-                .sort((a, b) => b - a)
-                .slice(0, 4)
-                .reduce((a, b) => a + b, 0),
-              B: values
-                .map((v) => v.B)
-                .sort((a, b) => b - a)
-                .slice(0, 4)
-                .reduce((a, b) => a + b, 0),
-              C: values
-                .map((v) => v.C)
-                .sort((a, b) => b - a)
-                .slice(0, 4)
-                .reduce((a, b) => a + b, 0),
-              D: values
-                .map((v) => v.D)
-                .sort((a, b) => b - a)
-                .slice(0, 4)
-                .reduce((a, b) => a + b, 0),
-              E: values
-                .map((v) => v.E)
-                .sort((a, b) => b - a)
-                .slice(0, 4)
-                .reduce((a, b) => a + b, 0),
-              F: values
-                .map((v) => v.F)
-                .sort((a, b) => b - a)
-                .slice(0, 4)
-                .reduce((a, b) => a + b, 0),
-            };
-            return topValues;
-          });
-  
-          setData(formattedData);
-          setLoading(false);
-        } else {
-          setError("No data available in the sheet.");
-          setLoading(false);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching sheet data", error);
-        setError("Error fetching data.");
-        setLoading(false);
-      });
-  }, []);
-  
+    // Filter data based on selected age group, gender, and date range
+    const filteredData = data.filter(
+      (entry) =>
+        entry.Age === ageGroup &&
+        entry.Gender.toLowerCase() === gender &&
+        new Date(entry.Day) >= dateRange[0] &&
+        new Date(entry.Day) <= dateRange[1]
+    );
+    setChartData(filteredData);
+  }, [ageGroup, gender, dateRange]);
+
   const handleBarClick = (letter) => {
     setSelectedLetter(letter);
   };
 
   const handleLogout = () => {
     alert("Logged out successfully!");
+    // Add actual logout logic here if needed (e.g., redirect, clear session)
   };
 
   const toggleTheme = () => {
     setIsDarkMode((prevMode) => !prevMode);
   };
 
-  const lineChartData = data.map((entry) => ({
-    day: entry.day,
+  const handleDateChange = (newRange) => {
+    setDateRange(newRange);
+  };
+
+  const handleSimpleDateChange = (e) => {
+    setSelectedDate(e.target.value);
+  };
+
+  const lineChartData = chartData.map((entry) => ({
+    day: entry.Day,
     value: entry[selectedLetter] || 0,
   }));
 
@@ -133,25 +78,73 @@ const Dashboard = () => {
         >
           Interactive Data Visualization Dashboard
         </h1>
-        <button onClick={toggleTheme}>
-          {isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+
+        {/* Dark/Light Mode Button with Icons */}
+        <button onClick={toggleTheme} className="mode-toggle-button">
+          {isDarkMode ? (
+            <FaSun size={24} color="yellow" />
+          ) : (
+            <FaMoon size={24} color="gray" />
+          )}
         </button>
+
+        {/* Logout Button */}
         <button onClick={handleLogout} className="logout-button">
           Logout
         </button>
       </header>
 
       <div>
-        {loading && <p>Loading...</p>}
-        {error && <p>{error}</p>}
-        {data.length > 0 && !loading && !error && (
+        <label htmlFor="age-group">Age Group:</label>
+        <select
+          id="age-group"
+          value={ageGroup}
+          onChange={(e) => setAgeGroup(e.target.value)}
+        >
+          <option value="15-25">15-25</option>
+          <option value=">25">Over 25</option>
+        </select>
+
+        <label htmlFor="gender">Gender:</label>
+        <select
+          id="gender"
+          value={gender}
+          onChange={(e) => setGender(e.target.value)}
+        >
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
+
+        <div className="date-range">
+          <label>Choose Date Range:</label>
+          <Calendar
+            selectRange={true}
+            onChange={handleDateChange}
+            value={dateRange}
+            className={`custom-calendar ${isDarkMode ? "dark" : "light"}`}
+          />
+        </div>
+
+        {/* Simple Date Input */}
+        <div>
+          <label htmlFor="simple-date">Select a Date:</label>
+          <input
+            type="date"
+            id="simple-date"
+            value={selectedDate}
+            onChange={handleSimpleDateChange}
+          />
+        </div>
+
+        {chartData.length > 0 ? (
           <ResponsiveContainer width="100%" height={400}>
-            <BarChart data={data}>
+            <BarChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="day" />
+              <XAxis dataKey="Day" />
               <YAxis />
               <Tooltip />
               <Legend />
+              <Brush dataKey="Day" height={30} stroke="#8884d8" onChange={handleDateChange} />
               <Bar
                 dataKey="A"
                 fill="#8884d8"
@@ -184,9 +177,11 @@ const Dashboard = () => {
               />
             </BarChart>
           </ResponsiveContainer>
+        ) : (
+          <p>No data available</p>
         )}
 
-        {selectedLetter && lineChartData.length > 0 && !loading && !error && (
+        {selectedLetter && lineChartData.length > 0 && (
           <div>
             <h2>Details for Letter: {selectedLetter}</h2>
             <ResponsiveContainer width="100%" height={400}>
@@ -200,31 +195,7 @@ const Dashboard = () => {
             </ResponsiveContainer>
           </div>
         )}
-
-        {data.length === 0 && !loading && !error && <p>No data available</p>}
       </div>
-
-      <div className="calendar-wrapper">
-        <Calendar
-          onChange={setDate}
-          value={date}
-          className={`custom-calendar ${isDarkMode ? "dark" : "light"}`}
-        />
-        <div className="date-display">
-          Selected Date: <strong>{date.toDateString()}</strong>
-        </div>
-      </div>
-      <label for="age-group">Age Group:</label>
-      <select id="age-group">
-        <option value="15-25">15-25</option>
-        <option value=">25">Over 25</option>
-      </select>
-
-      <label for="gender">Gender:</label>
-      <select id="gender" style={{ height: "70 px" }}>
-        <option value="male">Male</option>
-        <option value="female">Female</option>
-      </select>
     </div>
   );
 };
